@@ -1,5 +1,5 @@
 # Social Analyzer; Portainer LAN Stack; fork: https://github.com/hoangthang0106/social-analyzer
-# Host 18998/tcp is a CANDIDATE only. Confirm on actual VM/LXC before deployment.
+# Dedicated OSINT host range 29001-29099; host port is only a CANDIDATE. Confirm on actual VM/LXC before deployment.
 services:
   social-analyzer:
     build:
@@ -11,8 +11,6 @@ services:
       - no-new-privileges:true
     volumes:
       - analyzer_logs:/usr/src/app/logs
-    expose:
-      - "9005"
   gateway:
     image: caddy:2
     restart: unless-stopped
@@ -21,7 +19,7 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      - "${LAN_IP:?ENTER_LAN_IP}:${SOCIAL_ANALYZER_HOST_PORT:-18998}:80/tcp"
+      - "${LAN_IP:?ENTER_LAN_IP}:${SOCIAL_ANALYZER_HOST_PORT:-29005}:80/tcp"
     environment:
       AUTH_USER: "${OSINT_AUTH_USER:?ENTER_USERNAME}"
       AUTH_HASH: "${OSINT_AUTH_HASH:?ENTER_BCRYPT_HASH}"
