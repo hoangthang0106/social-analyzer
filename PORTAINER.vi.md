@@ -7,6 +7,24 @@ Dùng fork [hoangthang0106/social-analyzer](https://github.com/hoangthang0106/so
 
  Backend vẫn sử dụng cổng dịch vụ riêng 9005/TCP trong mạng Docker (không publish). Không đổi tùy tiện cổng lắng nghe của phần mềm.
 
+
+## GHI CHÚ CÔNG DỤNG — ĐỌC TRÊN ĐIỆN THOẠI
+
+- **Ứng dụng:** Social Analyzer
+- **Dùng để:** Tìm và phân tích hồ sơ mạng xã hội theo username, so sánh profile liên quan; không khẳng định các profile thuộc cùng người.
+- **Port truy cập sau cài:** `http://LAN_IP:29005` (chỉ khi cổng trống và Stack chạy thành công).
+- **Kiểu cài:** Có build: Dockerfile.portainer dùng Node 22; bản nhẹ không chạy Selenium Hub/VNC.
+- **Nguyên tắc:** Kết quả OSINT chỉ là dấu hiệu; chỉ kiểm tra dữ liệu được phép. Không lưu email/số điện thoại, khóa API hoặc mật khẩu trong fork công khai.
+
+### Thao tác Portainer bằng điện thoại
+
+1. Chrome → Portainer → **Environments → Containers/Stacks**, chọn đúng Docker endpoint. Kiểm tra chưa có Stack này.
+2. Vào **Stacks → Add stack → Repository**, nhập các giá trị Git bên dưới.
+3. Kéo xuống **Environment variables** → **Add an environment variable** từng dòng. Nhập `LAN_IP`, `OSINT_AUTH_USER`, `OSINT_AUTH_HASH` (là bcrypt hash, không phải mật khẩu thuần).
+4. Kiểm tra host port 29005 không bị chiếm (cả container dừng). Sau đó mới **Deploy the stack**.
+5. Mở **Containers → Logs** của gateway và ứng dụng. Nếu cả hai chạy bình thường, mở địa chỉ LAN trên điện thoại rồi đăng nhập bằng **mật khẩu gốc**.
+6. Nếu build lỗi, xem phương án `portainer-image-only.yml` ở bên dưới; **không đổi cổng ngẫu nhiên để chữa lỗi build**.
+
 ## 1. Kiểm tra trước bằng lệnh chỉ đọc trên đúng VM/LXC Docker
 
 ```bash
