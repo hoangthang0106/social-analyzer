@@ -1,7 +1,7 @@
 # Use after manually building the tagged image on this Docker host.
 # This file avoids Portainer remote-endpoint build limitations.
 # Social Analyzer; Portainer LAN Stack; fork: https://github.com/hoangthang0106/social-analyzer
-# Dedicated OSINT host range 29001-29099; host port is only a CANDIDATE. Confirm on actual VM/LXC before deployment.
+# Sequential 1889x OSINT LAN ports; availability is not verified until checked on Docker VM/LXC.
 services:
   social-analyzer:
     image: local/osint-social-analyzer:portainer
