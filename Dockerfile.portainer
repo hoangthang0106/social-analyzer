@@ -6,5 +6,5 @@ RUN npm ci --omit=dev --no-audit --no-fund
 COPY . .
 RUN mkdir -p /usr/src/app/logs && chown -R node:node /usr/src/app
 USER node
-EXPOSE 9005
+EXPOSE 18898
 CMD ["npm", "start", "--", "--docker"]
