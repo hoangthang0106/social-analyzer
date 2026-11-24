@@ -1,35 +1,39 @@
-version: "3" 
+# Reduced Web UI deployment: no public Selenium Grid/VNC ports; advanced webdriver workflows need separate config.
+# IT-MANAGER: Default Docker Compose for mobile Portainer. Port bindings follow the 1889x sequence.
+# Use LAN_IP, OSINT_AUTH_USER, OSINT_AUTH_PASSWORD entered in Portainer; verify port before deployment.
+# Social Analyzer; Portainer LAN Stack; fork: https://github.com/hoangthang0106/social-analyzer
+# Dedicated OSINT host range 29001-29099; host port is only a CANDIDATE. Confirm on actual VM/LXC before deployment.
 services:
   social-analyzer:
-    build: .
-    ports:
-      - "9005:9005"
-    depends_on:
-      - hub
-    links:
-      - hub
-    entrypoint: npm start -- --docker --grid "http://hub:4444/wd/hub"
-  hub:
-    image: selenium/hub
-    ports:
-      - "4444:4444"
+    build:
+      context: .
+      dockerfile: Dockerfile.portainer
+    image: local/osint-social-analyzer:portainer
+    restart: unless-stopped
     environment:
-      GRID_MAX_SESSION: 16
-      GRID_BROWSER_TIMEOUT: 6000
-      GRID_TIMEOUT: 6000
-  firefox:
-    image: selenium/node-firefox
-    container_name: web-automation_firefox
-    depends_on:
-      - hub
-    environment:
-      SE_EVENT_BUS_HOST: hub
-      SE_EVENT_BUS_PUBLISH_PORT: 4442
-      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-      SE_NODE_MAX_SESSIONS: ${CPU_CORES:-2}
+      PORT: "18898"
+    security_opt:
+      - no-new-privileges:true
     volumes:
-      - /dev/shm:/dev/shm
+      - analyzer_logs:/usr/src/app/logs
+  gateway:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - social-analyzer
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "9002:5900"
-    links:
-      - hub
+      - "${LAN_IP:?ENTER_LAN_IP}:${SOCIAL_ANALYZER_HOST_PORT:-18898}:18898/tcp"
+    environment:
+      AUTH_USER: "${OSINT_AUTH_USER:?ENTER_USERNAME}"
+      AUTH_PASSWORD: "${OSINT_AUTH_PASSWORD:?ENTER_PASSWORD_IN_PORTAINER}"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        HASH=$$(caddy hash-password --algorithm bcrypt --plaintext "$$AUTH_PASSWORD")
+        printf '%s\n' ':18898 {' '  basic_auth {' "    $$AUTH_USER $$HASH" '  }' '  reverse_proxy social-analyzer:18898' '}' > /etc/caddy/Caddyfile
+        caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+        exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+volumes:
+  analyzer_logs:
