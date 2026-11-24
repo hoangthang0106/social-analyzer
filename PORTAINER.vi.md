@@ -74,7 +74,7 @@ docker build -f Dockerfile.portainer -t local/osint-social-analyzer:portainer .
 ## 4. Kiểm tra sau khi Deploy (chỉ khi đã chủ động xác nhận)
 
 - Đợi cả container ứng dụng và **gateway** Running, xem **Logs** nếu có lỗi.
-- Mở **http://LAN_IP:29005** (thay port nếu đã đổi), nhập username và **mật khẩu gốc** bạn dùng tạo hash.
+- Mở **http://LAN_IP:29005/app.html** (thay port nếu đã đổi), nhập username và **mật khẩu gốc** bạn dùng tạo hash.
 - Kiểm tra khả năng truy vấn dữ liệu bạn sở hữu hoặc được ủy quyền. Không có công cụ nào biết hết nền tảng mà một email/số điện thoại đã đăng ký.
 
 ## 5. Bảo mật & giới hạn
